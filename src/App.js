@@ -1,15 +1,18 @@
 import React from "react";
 import "./App.css";
+import { connect } from "react-redux";
 
 // Components
 import Button from "./components/Button";
 import Input from "./components/Input";
 import ListElement from "./components/ListElement";
 
+// Actions
+import { addTodo } from "./redux/actions/todoAction";
+
 class App extends React.Component {
   state = {
     currentValue: "",
-    values: [],
     isRunOnClick: true
   };
 
@@ -36,28 +39,14 @@ class App extends React.Component {
   }
 
   _handleOnClick = () => {
-    const { currentValue, values, isRunOnClick } = this.state;
+    const { dispatch } = this.props;
+    const { currentValue } = this.state;
 
-    console.log('isRunOnClick :', isRunOnClick);
-    values.push(currentValue);
-    this.setState({ values: values }, () => {
-      console.log(this.state.values);
-    });
-    // if (isRunOnClick === true) {
-    // }
+    dispatch(addTodo(currentValue));
   };
 
-  _handeOnChange = event => {
-    this.setState({ currentValue: event.target.value }, () => {
-      console.log("this.state.currentValue 1", this.state.currentValue);
-    });
-    console.log("this.state.currentValue 2", this.state.currentValue);
-  };
-
-  _renderElements = () => {
-    const { values } = this.state;
-
-    return values.map((value, index) => <ListElement key={index} text={value} />);
+  _handleOnChange = event => {
+    this.setState({ currentValue: event.target.value });
   };
 
   render() {
@@ -71,19 +60,23 @@ class App extends React.Component {
     return (
       <div className="App">
         <div>
-          <Input handleOnChange={this._handeOnChange} />
-          {
-            currentValue && (
-              <Button isDisable={currentValue === ''} title="test" handleOnClick={this._handleOnClick} />
-            )
-          }
+          <Input handleOnChange={this._handleOnChange} />
+          {currentValue && (
+            <Button
+              isDisable={currentValue === ""}
+              title="test"
+              handleOnClick={this._handleOnClick}
+            />
+          )}
         </div>
         <div style={css.ul}>
-          <ul>{this._renderElements()}</ul>
+          <ul>
+            <ListElement text="test" />
+          </ul>
         </div>
       </div>
     );
   }
 }
 
-export default App;
+export default connect()(App);
